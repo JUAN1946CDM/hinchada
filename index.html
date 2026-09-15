@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Hinchada de la Vida - Trivia Escolar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #121214;
+            --bg-card: rgba(30, 30, 36, 0.95);
+            --accent-green: #00e676;
+            --accent-red: #ff3d00;
+            --primary-club: #00a852;
+            --secondary-club: #ffffff;
+            --text-light: #f8f9fa;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            background-color: var(--primary-club);
+            color: var(--text-light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            transition: background-color 0.5s ease;
+        }
+
+        #app-container {
+            width: 100%;
+            max-width: 500px;
+            min-height: 100vh;
+            background: var(--bg-dark);
+            border-left: 3px solid rgba(255,255,255,0.1);
+            border-right: 3px solid rgba(255,255,255,0.1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 0 30px rgba(0,0,0,0.9);
+            overflow: hidden;
+        }
+
+        .trapo-banner {
+            width: 100%;
+            height: 25px;
+            background: linear-gradient(90deg, var(--primary-club) 50%, var(--secondary-club) 50%);
+            border-bottom: 2px solid #000;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            font-weight: 900;
+            font-size: 0.7rem;
+            color: #fff;
+            text-shadow: 1px 1px 2px #000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            transition: background 0.5s ease;
+        }
+
+        .screen {
+            display: none;
+            flex-direction: column;
+            padding: 20px;
+            flex: 1;
+            z-index: 2;
+            overflow-y: auto;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        h1, h2, h3, .spray-font {
+            font-family: 'Permanent Marker', cursive;
+            text-shadow: 2px 2px 0px #000;
+            letter-spacing: 1px;
+        }
+
+        .btn {
+            background: var(--accent-green);
+            color: #000;
+            border: none;
+            padding: 15px 20px;
+            font-size: 1.1rem;
+            font-weight: 900;
+            border-radius: 8px;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 0 5px 0px #00a852;
+            transition: all 0.1s ease;
+            margin-top: 15px;
+            width: 100%;
+        }
+
+        .btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0px #00a852;
+        }
+
+        .color-picker-group {
+            display: flex;
+            justify-content: space-around;
+            margin: 15px 0;
+            background: var(--bg-card);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #3a3d52;
+        }
+
+        .color-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.85rem;
+        }
+
+        input[type="color"] {
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            background: none;
+        }
+
+        .input-field, select.input-field {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-card);
+            border: 2px solid #3a3d52;
+            color: #fff;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-top: 8px;
+        }
+
+        .preview-flag {
+            width: 100%;
+            height: 140px;
+            border: 3px solid #fff;
+            border-radius: 8px;
+            margin: 15px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary-club) 50%, var(--secondary-club) 50%);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            position: relative;
+            transition: background 0.5s ease;
+            overflow: hidden;
+        }
+
+        .logo-container {
+            width: 65px;
+            height: 65px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 5px;
+            filter: drop-shadow(2px 2px 4px #000);
+        }
+
+        .logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .header-bar {
+            background: var(--bg-card);
+            padding: 12px 15px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            border-left: 6px solid var(--primary-club);
+        }
+
+        .score-badge {
+            background: var(--accent-green);
+            color: #000;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: 900;
+            font-size: 0.9rem;
+        }
+
+        .map-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 55vh;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .map-card {
+            background: var(--bg-card);
+            padding: 12px 15px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 2px solid #3a3d52;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .map-card:hover {
+            transform: scale(1.02);
+            border-color: var(--accent-green);
+        }
+
+        .tag {
+            background: #121214;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: var(--accent-green);
+        }
+
+        .story-card {
+            background: var(--bg-card);
+            padding: 18px;
+            border-radius: 8px;
+            border: 2px solid #3a3d52;
+            margin-bottom: 15px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .story-text {
+            font-size: 1rem;
+            line-height: 1.4;
+            margin-top: 12px;
+            flex: 1;
+        }
+
+        .choice-btn {
+            background: #2b2d42;
+            color: #fff;
+            border: 1px solid #5a5d72;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 8px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .choice-btn:hover {
+            background: var(--primary-club);
+            color: #000;
+            font-weight: bold;
+        }
+
+        .feedback-box {
+            padding: 12px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-weight: bold;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .feedback-correct {
+            background-color: #00e676;
+            color: #000;
+            box-shadow: 0 0 10px #00e676;
+        }
+
+        .feedback-wrong {
+            background-color: #ff3d00;
+            color: #fff;
+            box-shadow: 0 0 10px #ff3d00;
+        }
+
+        .music-player {
+            background: #18181c;
+            border-top: 2px solid #3a3d52;
+            padding: 10px 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .controls-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .music-btn {
+            background: #3a3d52;
+            color: #fff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .music-btn:hover {
+            background: var(--accent-green);
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app-container">
+    <div class="trapo-banner">
+        <span>🥁 EL AGUANTE ES LA VIDA 🎺</span>
+        <span>🎨 LA HINCHADA DE COLOMBIA ⚽</span>
+    </div>
+
+    <!-- PANTALLA 1: REGISTRO -->
+    <div id="screen-setup" class="screen active">
+        <h1 style="color: var(--accent-green); text-align: center; margin-top: 10px;">LA HINCHADA DE LA VIDA</h1>
+        <p style="text-align: center; color: #aaa; font-size: 0.85rem;">Personaliza tu parche y representa a tu gente</p>
+
+        <div class="preview-flag" id="flag-preview">
+            <div id="logo-preview-box" class="logo-container"></div>
+            <h2 id="flag-text" class="spray-font" style="color: #fff; text-shadow: 2px 2px 4px #000;">LOS DEL SUR</h2>
+        </div>
+
+        <label style="font-weight: bold; font-size: 0.85rem;">Selecciona tu Hinchada o Barra:</label>
+        <select id="bar-logo-select" class="input-field">
+            <option value="LDS">🟢 Los Del Sur (Atlético Nacional)</option>
+            <option value="LGARS">🦁 La Guardia Albi-Roja Sur (Santa Fe)</option>
+            <option value="CADC">💀 Comandos Azules (Millonarios)</option>
+            <option value="RXN">🔴 RXN - REXiSTENXIA Norte (DIM)</option>
+            <option value="FRV">🟢 Frente Radical Verde (Deportivo Cali)</option>
+            <option value="BRS">👹 Barón Rojo Sur (América de Cali)</option>
+            <option value="KUERVOS">🦅 Los Kuervos (Junior)</option>
+            <option value="OTRO">⚽ Parche Personalizado / Genérico</option>
+        </select>
+
+        <!-- Campo adicional para subir imagen si se selecciona OTRO -->
+        <div id="custom-logo-group" style="display: none; margin-top: 10px;">
+            <label style="font-weight: bold; font-size: 0.85rem;">Sube el logo de tu Parche:</label>
+            <input type="file" id="custom-logo-input" class="input-field" accept="image/*">
+        </div>
+
+        <div class="color-picker-group">
+            <div class="color-box">
+                <label>Color 1</label>
+                <input type="color" id="color1" value="#00a852">
+            </div>
+            <div class="color-box">
+                <label>Color 2</label>
+                <input type="color" id="color2" value="#ffffff">
+            </div>
+        </div>
+
+        <label style="font-weight: bold; font-size: 0.85rem;">Nombre de tu Parche / Barra:</label>
+        <input type="text" id="club-name" class="input-field" value="LOS DEL SUR" maxlength="20">
+
+        <button class="btn" id="btn-start">¡Pintar Muralla y Entrar!</button>
+    </div>
+
+    <!-- PANTALLA 2: MAPA DE GRADOS -->
+    <div id="screen-map" class="screen">
+        <div class="header-bar">
+            <div>
+                <span style="font-size: 0.75rem; color: #aaa;">PARCHE REGISTRADO</span>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div id="user-logo-box" style="width: 30px; height: 30px;"></div>
+                    <h3 id="user-club-display" style="color: var(--primary-club);">LOS DEL SUR</h3>
+                </div>
+            </div>
+            <div>
+                <span class="score-badge" id="total-score">0 PTS</span>
+            </div>
+        </div>
+
+        <h2 style="margin-bottom: 10px; font-size: 1.2rem;">Camino de Escuelas (1° a 11°)</h2>
+        <div class="map-grid" id="map-grid"></div>
+    </div>
+
+    <!-- PANTALLA 3: MODO JUEGO -->
+    <div id="screen-game" class="screen">
+        <div class="header-bar">
+            <div>
+                <span class="tag" id="game-grade-title">1° GRADO</span>
+                <h3 style="color: var(--accent-green);" id="game-scene-title">Pregunta 1/10</h3>
+            </div>
+            <button id="btn-exit-game" style="background:none; border:none; color:#fff; cursor:pointer; font-weight:bold;">✖ Salir</button>
+        </div>
+
+        <div class="story-card">
+            <span class="tag" style="width: fit-content;" id="game-step-tag">Materia</span>
+            <p class="story-text" id="game-text">Cargando...</p>
+            <div id="feedback-area"></div>
+            <div id="game-choices" style="display: flex; flex-direction: column; margin-top: 15px;"></div>
+        </div>
+    </div>
+
+    <!-- REPRODUCTOR -->
+    <div class="music-player">
+        <div class="controls-row">
+            <span style="font-size: 0.8rem; font-weight: bold; color: var(--accent-green);">📻 Cumbia de la Tribuna</span>
+            <button class="music-btn" id="btn-play-pause">▶️ Reproducir</button>
+        </div>
+        <select id="cumbia-select" class="input-field" style="margin-top: 0; padding: 6px; font-size: 0.85rem;">
+            <option value="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3">Damas Gratis - Cumbia Callejera</option>
+            <option value="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3">Amar Azul - Yo Me Enamoré</option>
+            <option value="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3">Pibes Chorros - El Pibe Cantina</option>
+        </select>
+        <audio id="audio-player" loop></audio>
+    </div>
+
+    <div class="trapo-banner" style="border-top: 2px solid #000; border-bottom: none;">
+        <span>🎺 SIENTE EL BOMBEO DEL BARRISMO PAZ 🥁</span>
+    </div>
+</div>
+
+<script>
+    const imageUrls = {
+        LDS: "OIP (2).webp",
+        LGARS: "OIP (1).webp",
+        CADC: "OIP.webp",
+        RXN: "OIP (3).webp",
+        FRV: "OIP (4).webp",
+        BRS: "BRS.jpg",
+        KUERVOS: "OIP (5).webp",
+        OTRO: ""
+    };
+
+    const presetsBarras = {
+        "LDS": { name: "LOS DEL SUR", imgKey: "LDS", c1: "#00a852", c2: "#ffffff" },
+        "LGARS": { name: "LA GUARDIA ALBIROJA", imgKey: "LGARS", c1: "#e50011", c2: "#ffffff" },
+        "CADC": { name: "COMANDOS AZULES", imgKey: "CADC", c1: "#0033a0", c2: "#ffffff" },
+        "RXN": { name: "REXISTENXIA NORTE", imgKey: "RXN", c1: "#d31225", c2: "#002d62" },
+        "FRV": { name: "FRENTE RADICAL", imgKey: "FRV", c1: "#008751", c2: "#ffffff" },
+        "BRS": { name: "BARÓN ROJO SUR", imgKey: "BRS", c1: "#c8102e", c2: "#000000" },
+        "KUERVOS": { name: "LOS KUERVOS", imgKey: "KUERVOS", c1: "#002f6c", c2: "#c8102e" },
+        "OTRO": { name: "MI PARCHE POPULAR", imgKey: "OTRO", c1: "#00e676", c2: "#ff3d00" }
+    };
+
+    const state = {
+        clubName: "LOS DEL SUR",
+        imgKey: "LDS",
+        customImgData: null,
+        color1: "#00a852",
+        color2: "#ffffff",
+        currentGrade: 1,
+        currentSubLevel: 0,
+        score: 0
+    };
+
+    const allGradesData = {
+        1: { title: "1° Grado: Fundamentos", levels: [
+            { subject: "Matemáticas", text: "¿Cuánto es 5 + 3?", choices: [{ text: "8", correct: true }, { text: "7", correct: false }] },
+            { subject: "Español", text: "¿Cuál es la primera vocal del abecedario?", choices: [{ text: "A", correct: true }, { text: "E", correct: false }] },
+            { subject: "Ciencias", text: "¿Qué necesitan las plantas para crecer?", choices: [{ text: "Agua y luz del sol", correct: true }, { text: "Gaseosa y sombra", correct: false }] },
+            { subject: "Sociales", text: "¿En qué país vivimos?", choices: [{ text: "Colombia", correct: true }, { text: "España", correct: false }] },
+            { subject: "Convivencia", text: "Si tropiezas a alguien en el descanso, ¿qué debes decir?", choices: [{ text: "Lo siento, perdón", correct: true }, { text: "Reírte e irte", correct: false }] },
+            { subject: "Matemáticas", text: "¿Cuántos lados tiene un triángulo?", choices: [{ text: "3", correct: true }, { text: "4", correct: false }] },
+            { subject: "Español", text: "¿Cuál de estas palabras es un animal?", choices: [{ text: "Perro", correct: true }, { text: "Mesa", correct: false }] },
+            { subject: "Ciencias", text: "¿Cuál de estos seres vivos vuela?", choices: [{ text: "Pájaro", correct: true }, { text: "Pez", correct: false }] },
+            { subject: "Inglés", text: "¿Cómo se dice 'Rojo' en inglés?", choices: [{ text: "Red", correct: true }, { text: "Blue", correct: false }] },
+            { subject: "Deportes", text: "¿Con qué parte del cuerpo se patea el balón en fútbol?", choices: [{ text: "Con el pie", correct: true }, { text: "Con la mano", correct: false }] }
+        ]},
+        2: { title: "2° Grado: Básicos", levels: [
+            { subject: "Matemáticas", text: "¿Cuánto es 12 - 4?", choices: [{ text: "8", correct: true }, { text: "6", correct: false }] },
+            { subject: "Español", text: "¿Cuál es el plural de 'Lápiz'?", choices: [{ text: "Lápices", correct: true }, { text: "Lápizes", correct: false }] },
+            { subject: "Ciencias", text: "¿Cuál es un animal carnívoro?", choices: [{ text: "León", correct: true }, { text: "Vaca", correct: false }] },
+            { subject: "Sociales", text: "¿Cuáles son los colores de la bandera de Colombia?", choices: [{ text: "Amarillo, Azul y Rojo", correct: true }, { text: "Verde, Blanco y Rojo", correct: false }] },
+            { subject: "Matemáticas", text: "¿Cuánto es 2 x 5?", choices: [{ text: "10", correct: true }, { text: "12", correct: false }] },
+            { subject: "Inglés", text: "¿Cómo se dice 'Perro' en inglés?", choices: [{ text: "Dog", correct: true }, { text: "Cat", correct: false }] },
+            { subject: "Ciencias", text: "¿El sol es una estrella o un planeta?", choices: [{ text: "Una estrella", correct: true }, { text: "Un planeta", correct: false }] },
+            { subject: "Español", text: "¿Qué tipo de palabra es 'Correr'?", choices: [{ text: "Un verbo", correct: true }, { text: "Un sustantivo", correct: false }] },
+            { subject: "Sociales", text: "¿Quién es la máxima autoridad en un municipio?", choices: [{ text: "El Alcalde", correct: true }, { text: "El Rector", correct: false }] },
+            { subject: "Convivencia", text: "Para hablar en clase debes:", choices: [{ text: "Pedir la palabra levantando la mano", correct: true }, { text: "Gritar encima del profesor", correct: false }] }
+        ]},
+        3: { title: "3° Grado: Elemental", levels: [
+            { subject: "Matemáticas", text: "¿Cuánto es 7 x 6?", choices: [{ text: "42", correct: true }, { text: "36", correct: false }] },
+            { subject: "Español", text: "Identifica el adjetivo en: 'El perro grande corre'.", choices: [{ text: "Grande", correct: true }, { text: "Corre", correct: false }] },
+            { subject: "Ciencias", text: "El estado del agua en el hielo es:", choices: [{ text: "Sólido", correct: true }, { text: "Líquido", correct: false }] },
+            { subject: "Sociales", text: "¿Cuál es la capital de Colombia?", choices: [{ text: "Bogotá", correct: true }, { text: "Medellín", correct: false }] },
+            { subject: "Matemáticas", text: "¿Cuánto es 50 dividido en 5?", choices: [{ text: "10", correct: true }, { text: "5", correct: false }] },
+            { subject: "Inglés", text: "¿Qué significa 'Thank you'?", choices: [{ text: "Gracias", correct: true }, { text: "Por favor", correct: false }] },
+            { subject: "Ciencias", text: "¿Qué órgano usamos para respirar?", choices: [{ text: "Pulmones", correct: true }, { text: "Estómago", correct: false }] },
+            { subject: "Español", text: "Palabra sinónima de 'Feliz':", choices: [{ text: "Alegre", correct: true }, { text: "Triste", correct: false }] },
+            { subject: "Geografía", text: "¿Cuántos océanos principales existen?", choices: [{ text: "5", correct: true }, { text: "2", correct: false }] },
+            { subject: "Convivencia", text: "Respetar las opiniones de los demás se llama:", choices: [{ text: "Tolerancia", correct: true }, { text: "Indiferencia", correct: false }] }
+        ]},
+        4: { title: "4° Grado: Intermedio Bajo", levels: [
+            { subject: "Matemáticas", text: "¿Cuál es el resultado de 120 + 80?", choices: [{ text: "200", correct: true }, { text: "220", correct: false }] },
+            { subject: "Ciencias", text: "¿Qué gas respiran los seres humanos para vivir?", choices: [{ text: "Oxígeno", correct: true }, { text: "Dióxido de carbono", correct: false }] },
+            { subject: "Sociales", text: "¿En qué continente se ubica Colombia?", choices: [{ text: "América", correct: true }, { text: "Europa", correct: false }] },
+            { subject: "Español", text: "¿Qué sílaba lleva el acento en las palabras agudas?", choices: [{ text: "La última", correct: true }, { text: "La penúltima", correct: false }] },
+            { subject: "Matemáticas", text: "¿Cuánto es 9 x 9?", choices: [{ text: "81", correct: true }, { text: "72", correct: false }] },
+            { subject: "Inglés", text: "Traducción de 'Apple':", choices: [{ text: "Manzana", correct: true }, { text: "Pera", correct: false }] },
+            { subject: "Ciencias", text: "¿Cuál es el planeta más cercano al Sol?", choices: [{ text: "Mercurio", correct: true }, { text: "Júpiter", correct: false }] },
+            { subject: "Historia", text: "¿En qué año ocurrió la Independencia de Colombia?", choices: [{ text: "1810", correct: true }, { text: "1910", correct: false }] },
+            { subject: "Geometría", text: "¿Un cuadrado tiene cuántos ángulos rectos (90°)?", choices: [{ text: "4", correct: true }, { text: "2", correct: false }] },
+            { subject: "Español", text: "¿Cuál es el antónimo de 'Alto'?", choices: [{ text: "Bajo", correct: true }, { text: "Largo", correct: false }] }
+        ]},
+        5: { title: "5° Grado: Primaria Superior", levels: [
+            { subject: "Matemáticas", text: "Simplifica la fracción 2/4:", choices: [{ text: "1/2", correct: true }, { text: "3/4", correct: false }] },
+            { subject: "Español", text: "¿Qué tipo de palabra es 'Rápidamente'?", choices: [{ text: "Adverbio", correct: true }, { text: "Sustantivo", correct: false }] },
+            { subject: "Ciencias", text: "El proceso por el cual las plantas fabrican alimento es:", choices: [{ text: "Fotosíntesis", correct: true }, { text: "Respiración cellular", correct: false }] },
+            { subject: "Sociales", text: "¿Cuáles son los dos océanos que bañan a Colombia?", choices: [{ text: "Pacífico y Atlántico", correct: true }, { text: "Índico y Pacífico", correct: false }] },
+            { subject: "Matemáticas", text: "¿Cuál es el perímetro de un cuadrado de lado 5 cm?", choices: [{ text: "20 cm", correct: true }, { text: "25 cm", correct: false }] },
+            { subject: "Inglés", text: "Pasado simple del verbo 'To go':", choices: [{ text: "Went", correct: true }, { text: "Gone", correct: false }] },
+            { subject: "Ciencias", text: "Sistema encargado de bombear la sangre:", choices: [{ text: "Circulatorio", correct: true }, { text: "Digestivo", correct: false }] },
+            { subject: "Historia", text: "Líder principal de la campaña libertadora en Colombia:", choices: [{ text: "Simón Bolívar", correct: true }, { text: "Cristóbal Colón", correct: false }] },
+            { subject: "Español", text: "Forma correcta de escribir:", choices: [{ text: "Haber", correct: true }, { text: "Aver", correct: false }] },
+            { subject: "Convivencia", text: "Mecanismo democrático para elegir personero escolar:", choices: [{ text: "Voto popular", correct: true }, { text: "Sorteo", correct: false }] }
+        ]},
+        6: { title: "6° Grado: Secundaria Inicial", levels: [
+            { subject: "Matemáticas", text: "¿Cuánto es (-5) + (-3)?", choices: [{ text: "-8", correct: true }, { text: "8", correct: false }] },
+            { subject: "Español", text: "¿Qué género literario pertenece a las obras teatrales?", choices: [{ text: "Dramático", correct: true }, { text: "Lírico", correct: false }] },
+            { subject: "Ciencias", text: "Unidad básica de la vida:", choices: [{ text: "La célula", correct: true }, { text: "El átomo", correct: false }] },
+            { subject: "Historia", text: "¿Cuna de la civilización donde inventaron la escritura cuneiforme?", choices: [{ text: "Mesopotamia", correct: true }, { text: "Grecia", correct: false }] },
+            { subject: "Geografía", text: "Línea imaginaria que divide la Tierra en Hemisferio Norte y Sur:", choices: [{ text: "Línea del Ecuador", correct: true }, { text: "Meridiano de Greenwich", correct: false }] },
+            { subject: "Matemáticas", text: "El mínimo común múltiplo (mcm) entre 3 y 4 es:", choices: [{ text: "12", correct: true }, { text: "7", correct: false }] },
+            { subject: "Inglés", text: "¿Qué pronombre personal reemplaza a 'Mary and I'?", choices: [{ text: "We", correct: true }, { text: "They", correct: false }] },
+            { subject: "Ciencias", text: "¿Qué capa protege a la Tierra de los rayos ultravioleta?", choices: [{ text: "Capa de Ozono", correct: true }, { text: "Núcleo", correct: false }] },
+            { subject: "Español", text: "Acentuación de la palabra 'Cántaro':", choices: [{ text: "Esdrújula", correct: true }, { text: "Grave", correct: false }] },
+            { subject: "Ciudadanía", text: "Documento supremo que rige las leyes en Colombia:", choices: [{ text: "Constitución Política", correct: true }, { text: "Código de Comercio", correct: false }] }
+        ]},
+        7: { title: "7° Grado: Grado Séptimo", levels: [
+            { subject: "Matemáticas", text: "Resuelve: 2x = 10. ¿Cuánto vale x?", choices: [{ text: "5", correct: true }, { text: "20", correct: false }] },
+            { subject: "Ciencias", text: "Organelo celular donde ocurre la respiración celular:", choices: [{ text: "Mitocondria", correct: true }, { text: "Ribosoma", correct: false }] },
+            { subject: "Historia", text: "Sistema político y social de la Europa medieval basado en siervos y señores:", choices: [{ text: "Feudalismo", correct: true }, { text: "Capitalismo", correct: false }] },
+            { subject: "Español", text: "Figura literaria que compara dos elementos usando 'como':", choices: [{ text: "Símil o comparación", correct: true }, { text: "Metáfora", correct: false }] },
+            { subject: "Geografía", text: "Continente con mayor densidad de población humana:", choices: [{ text: "Asia", correct: true }, { text: "Oceanía", correct: false }] },
+            { subject: "Matemáticas", text: "¿Cuál es el 20% de 100?", choices: [{ text: "20", correct: true }, { text: "10", correct: false }] },
+            { subject: "Inglés", text: "¿Cuál es la forma correcta del verbo 'To be' en pasado para 'They'?", choices: [{ text: "Were", correct: true }, { text: "Was", correct: false }] },
+            { subject: "Ciencias", text: "Los reinos biológicos incluyen animales, plantas, hongos, protistas y:", choices: [{ text: "Mónera (Bacterias)", correct: true }, { text: "Minerales", correct: false }] },
+            { subject: "Español", text: "En el enunciado 'Pedro lee un libro', el objeto directo es:", choices: [{ text: "Un libro", correct: true }, { text: "Pedro", correct: false }] },
+            { subject: "Sociales", text: "La cordillera de los Andes en Colombia se divide en cuántas ramas:", choices: [{ text: "3 (Occidental, Central, Oriental)", correct: true }, { text: "2", correct: false }] }
+        ]},
+        8: { title: "8° Grado: Álgebra e Historia", levels: [
+            { subject: "Matemáticas", text: "Resultado de (a + b)² :", choices: [{ text: "a² + 2ab + b²", correct: true }, { text: "a² + b²", correct: false }] },
+            { subject: "Español", text: "Movimiento literario enfocado en los sentimientos y la libertad individual:", choices: [{ text: "Romanticismo", correct: true }, { text: "Realismo", correct: false }] },
+            { subject: "Ciencias", text: "Ley de la física: 'A toda acción corresponde una reacción...':", choices: [{ text: "Igual y opuesta", correct: true }, { text: "Diferente y nula", correct: false }] },
+            { subject: "Historia", text: "Revolución de 1789 que cambió la historia política europea:", choices: [{ text: "Revolución Francesa", correct: true }, { text: "Revolución Industrial", correct: false }] },
+            { subject: "Matemáticas", text: "Grado absoluto del polinomio 3x³y² + 2x²y:", choices: [{ text: "5", correct: true }, { text: "3", correct: false }] },
+            { subject: "Inglés", text: "Elige la opción en Presente Perfecto: 'I ___ (live) here for 2 years'.", choices: [{ text: "have lived", correct: true }, { text: "lived", correct: false }] },
+            { subject: "Química", text: "Tabla que organiza todos los elementos químicos conocidos:", choices: [{ text: "Tabla Periódica", correct: true }, { text: "Tabla Pitagórica", correct: false }] },
+            { subject: "Biología", text: "Proceso de división celular que produce células idénticas:", choices: [{ text: "Mitosis", correct: true }, { text: "Meiosis", correct: false }] },
+            { subject: "Español", text: "Un ensayo se caracteriza principalmente por ser un texto:", choices: [{ text: "Argumentativo", correct: true }, { text: "Narrativo puro", correct: false }] },
+            { subject: "Sociales", text: "Proceso histórico de sustitución del trabajo manual por máquinas:", choices: [{ text: "Revolución Industrial", correct: true }, { text: "Feudalismo", correct: false }] }
+        ]},
+        9: { title: "9° Grado: Ciencias y Álgebra", levels: [
+            { subject: "Matemáticas", text: "Ecuación cuadrática general ax² + bx + c = 0. Su fórmula usa la raíz de:", choices: [{ text: "b² - 4ac", correct: true }, { text: "a² + b²", correct: false }] },
+            { subject: "Español", text: "Escritor colombiano ganador del Premio Nobel de Literatura:", choices: [{ text: "Gabriel García Márquez", correct: true }, { text: "Jorge Isaacs", correct: false }] },
+            { subject: "Biología", text: "Molécula portadora de la información genética:", choices: [{ text: "ADN", correct: true }, { text: "ATP", correct: false }] },
+            { subject: "Física", text: "Fórmula de la Fuerza según la Segunda Ley de Newton:", choices: [{ text: "F = m x a", correct: true }, { text: "F = m / v", correct: false }] },
+            { subject: "Historia", text: "Conflicto bélico global ocurrido entre 1914 y 1918:", choices: [{ text: "Primera Guerra Mundial", correct: true }, { text: "Guerra Fría", correct: false }] },
+            { subject: "Química", text: "Símbolo químico del Oro en la tabla periódica:", choices: [{ text: "Au", correct: true }, { text: "Ag", correct: false }] },
+            { subject: "Matemáticas", text: "Valor de la pendiente m en la recta y = 3x + 2 :", choices: [{ text: "3", correct: true }, { text: "2", correct: false }] },
+            { subject: "Inglés", text: "Conditional Type 1: 'If it rains, I ___ stay at home'.", choices: [{ text: "will", correct: true }, { text: "would", correct: false }] },
+            { subject: "Español", text: "Obra literaria cumbre de Gabriel García Márquez:", choices: [{ text: "Cien años de soledad", correct: true }, { text: "María", correct: false }] },
+            { subject: "Sociales", text: "Periodo de violencia en Colombia desencadenado tras el asesinato de:", choices: [{ text: "Jorge Eliécer Gaitán", correct: true }, { text: "Luis Carlos Galán", correct: false }] }
+        ]},
+        10: { title: "10° Grado: Trigonometría y Física", levels: [
+            { subject: "Matemáticas", text: "En un triángulo rectángulo, Seno (θ) equivale a:", choices: [{ text: "Cateto Opuesto / Hipotenusa", correct: true }, { text: "Cateto Adyacente / Hipotenusa", correct: false }] },
+            { subject: "Física", text: "Velocidad de la luz en el vacío aproximada:", choices: [{ text: "300,000 km/s", correct: true }, { text: "1,000 km/s", correct: false }] },
+            { subject: "Química", text: "PH de una sustancia completamente neutra como el agua pura:", choices: [{ text: "7", correct: true }, { text: "0", correct: false }] },
+            { subject: "Español", text: "Obra cumbre de la literatura española escrita por Miguel de Cervantes:", choices: [{ text: "Don Quijote de la Mancha", correct: true }, { text: "El Cantar de mio Cid", correct: false }] },
+            { subject: "Filosofía", text: "Filósofo griego famoso por la frase 'Solo sé que nada sé':", choices: [{ text: "Sócrates", correct: true }, { text: "Nietzsche", correct: false }] },
+            { subject: "Matemáticas", text: "Identidad trigonométrica fundamental: sin²(x) + cos²(x) = ?", choices: [{ text: "1", correct: true }, { text: "0", correct: false }] },
+            { subject: "Física", text: "Unidad de medida del Sistema Internacional para la energía o trabajo:", choices: [{ text: "Joule (J)", correct: true }, { text: "Watt (W)", correct: false }] },
+            { subject: "Química", text: "Partículas subatómicas con carga eléctrica positiva:", choices: [{ text: "Protones", correct: true }, { text: "Electrones", correct: false }] },
+            { subject: "Inglés", text: "Elige la voz pasiva de 'The boy ate the cake':", choices: [{ text: "The cake was eaten by the boy", correct: true }, { text: "The cake ate the boy", correct: false }] },
+            { subject: "Sociales", text: "Guerra ideológica entre EE.UU. y la URSS tras la Segunda Guerra Mundial:", choices: [{ text: "Guerra Fría", correct: true }, { text: "Guerra de los Mil Días", correct: false }] }
+        ]},
+        11: { title: "11° Grado: Cálculo y Filosofía (Pruebas Saber)", levels: [
+            { subject: "Cálculo", text: "La derivada de una función constante f(x) = c es:", choices: [{ text: "0", correct: true }, { text: "1", correct: false }] },
+            { subject: "Química", text: "Química encargada del estudio del carbono y sus compuestos:", choices: [{ text: "Química Orgánica", correct: true }, { text: "Química Inorgánica", correct: false }] },
+            { subject: "Física", text: "Propiedad de los cuerpos de oponerse a cambiar su estado de reposo o movimiento:", choices: [{ text: "Inercia", correct: true }, { text: "Rozamiento", correct: false }] },
+            { subject: "Filosofía", text: "Autor del imperativo categórico y la 'Crítica de la razón pura':", choices: [{ text: "Immanuel Kant", correct: true }, { text: "René Descartes", correct: false }] },
+            { subject: "Español", text: "Estructura argumentativa: Tesis, Argumentos y:", choices: [{ text: "Conclusión", correct: true }, { text: "Nudo", correct: false }] },
+            { subject: "Cálculo", text: "El límite de (1/x) cuando x tiende a infinito es:", choices: [{ text: "0", correct: true }, { text: "Infinito", correct: false }] },
+            { subject: "Inglés", text: "Select the modal verb used to express strong obligation:", choices: [{ text: "Must", correct: true }, { text: "Might", correct: false }] },
+            { subject: "Biología", text: "Traducción de ARN a proteínas en el ribosoma se denomina:", choices: [{ text: "Traducción", correct: true }, { text: "Transcripción", correct: false }] },
+            { subject: "Sociales", text: "Proceso global de interconexión económica, social y cultural:", choices: [{ text: "Globalización", correct: true }, { text: "Proteccionismo", correct: false }] },
+            { subject: "Filosofía", text: "Padre del racionalismo moderno famoso por 'Pienso, luego existo':", choices: [{ text: "René Descartes", correct: true }, { text: "Platón", correct: false }] }
+        ]}
+    };
+
+    const screens = {
+        setup: document.getElementById('screen-setup'),
+        map: document.getElementById('screen-map'),
+        game: document.getElementById('screen-game')
+    };
+
+    const audioPlayer = document.getElementById('audio-player');
+    const playPauseBtn = document.getElementById('btn-play-pause');
+    const cumbiaSelect = document.getElementById('cumbia-select');
+
+    window.addEventListener('DOMContentLoaded', () => {
+        setupEventListeners();
+        updateThemeColors();
+        renderLogos();
+    });
+
+    function renderLogos() {
+        const logoPreviewBox = document.getElementById('logo-preview-box');
+        const userLogoBox = document.getElementById('user-logo-box');
+        const fallbackIcon = '<span style="font-size:2rem;">⚽</span>';
+
+        if (state.imgKey === 'OTRO' && state.customImgData) {
+            const imgHTML = `<img src="${state.customImgData}" alt="${state.clubName}">`;
+            logoPreviewBox.innerHTML = imgHTML;
+            userLogoBox.innerHTML = imgHTML;
+        } else {
+            const url = imageUrls[state.imgKey];
+            const imgHTML = url 
+                ? `<img src="${url}" alt="${state.clubName}" onerror="this.outerHTML='${fallbackIcon}'">` 
+                : fallbackIcon;
+            logoPreviewBox.innerHTML = imgHTML;
+            userLogoBox.innerHTML = imgHTML;
+        }
+    }
+
+    function setupEventListeners() {
+        const selectBarra = document.getElementById('bar-logo-select');
+        const customLogoGroup = document.getElementById('custom-logo-group');
+
+        selectBarra.addEventListener('change', (e) => {
+            const val = e.target.value;
+            if (val === 'OTRO') {
+                customLogoGroup.style.display = 'block';
+            } else {
+                customLogoGroup.style.display = 'none';
+            }
+
+            const preset = presetsBarras[val];
+            if (preset) {
+                state.clubName = preset.name;
+                state.imgKey = preset.imgKey;
+                state.color1 = preset.c1;
+                state.color2 = preset.c2;
+
+                document.getElementById('club-name').value = preset.name;
+                document.getElementById('color1').value = preset.c1;
+                document.getElementById('color2').value = preset.c2;
+                document.getElementById('flag-text').innerText = preset.name;
+
+                renderLogos();
+                updateThemeColors();
+            }
+        });
+
+        document.getElementById('custom-logo-input').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    state.customImgData = event.target.result;
+                    renderLogos();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('color1').addEventListener('input', (e) => {
+            state.color1 = e.target.value;
+            updateThemeColors();
+        });
+
+        document.getElementById('color2').addEventListener('input', (e) => {
+            state.color2 = e.target.value;
+            updateThemeColors();
+        });
+
+        document.getElementById('club-name').addEventListener('input', (e) => {
+            state.clubName = e.target.value || "MI PARCHE";
+            document.getElementById('flag-text').innerText = state.clubName;
+        });
+
+        document.getElementById('btn-start').addEventListener('click', () => {
+            switchScreen('map');
+            renderMap();
+        });
+
+        document.getElementById('btn-exit-game').addEventListener('click', () => {
+            switchScreen('map');
+        });
+
+        playPauseBtn.addEventListener('click', () => {
+            if (audioPlayer.paused) {
+                if(!audioPlayer.src) audioPlayer.src = cumbiaSelect.value;
+                audioPlayer.play();
+                playPauseBtn.innerText = "⏸️ Pausar";
+            } else {
+                audioPlayer.pause();
+                playPauseBtn.innerText = "▶️ Reproducir";
+            }
+        });
+
+        cumbiaSelect.addEventListener('change', (e) => {
+            audioPlayer.src = e.target.value;
+            audioPlayer.play();
+            playPauseBtn.innerText = "⏸️ Pausar";
+        });
+    }
+
+    function updateThemeColors() {
+        document.documentElement.style.setProperty('--primary-club', state.color1);
+        document.documentElement.style.setProperty('--secondary-club', state.color2);
+        document.body.style.backgroundColor = state.color1;
+    }
+
+    function switchScreen(screenKey) {
+        Object.values(screens).forEach(s => s.classList.remove('active'));
+        screens[screenKey].classList.add('active');
+    }
+
+    function renderMap() {
+        document.getElementById('user-club-display').innerText = state.clubName;
+        document.getElementById('total-score').innerText = `${state.score} PTS`;
+        renderLogos();
+
+        const grid = document.getElementById('map-grid');
+        grid.innerHTML = '';
+
+        for (let i = 1; i <= 11; i++) {
+            const card = document.createElement('div');
+            card.className = 'map-card';
+            card.innerHTML = `
+                <div>
+                    <span class="tag">GRADO ${i}°</span>
+                    <h3 style="margin-top: 3px; font-size: 0.95rem;">${allGradesData[i].title}</h3>
+                    <span style="font-size: 0.75rem; color: #aaa;">📝 10 Preguntas académicas</span>
+                </div>
+                <div class="spray-font" style="font-size: 1.2rem; color: var(--accent-green);">PLAY</div>
+            `;
+
+            card.addEventListener('click', () => {
+                state.currentGrade = i;
+                state.currentSubLevel = 0;
+                loadCurrentLevel();
+                switchScreen('game');
+            });
+
+            grid.appendChild(card);
+        }
+    }
+
+    function loadCurrentLevel() {
+        const gradeObj = allGradesData[state.currentGrade];
+        const levelData = gradeObj.levels[state.currentSubLevel];
+
+        document.getElementById('game-grade-title').innerText = `GRADO ${state.currentGrade}°`;
+        document.getElementById('game-scene-title').innerText = `Pregunta ${state.currentSubLevel + 1}/10`;
+        document.getElementById('game-step-tag').innerText = levelData.subject;
+        document.getElementById('game-text').innerText = levelData.text;
+        document.getElementById('feedback-area').innerHTML = '';
+
+        const choicesContainer = document.getElementById('game-choices');
+        choicesContainer.innerHTML = '';
+
+        levelData.choices.forEach(choice => {
+            const btn = document.createElement('button');
+            btn.className = 'choice-btn';
+            btn.innerText = choice.text;
+            btn.addEventListener('click', () => handleChoice(choice.correct));
+            choicesContainer.appendChild(btn);
+        });
+    }
+
+    function handleChoice(isCorrect) {
+        const feedback = document.getElementById('feedback-area');
+        const choicesContainer = document.getElementById('game-choices');
+        choicesContainer.innerHTML = '';
+
+        if (isCorrect) {
+            state.score += 10;
+            feedback.innerHTML = `<div class="feedback-box feedback-correct">¡CORRECTO! +10 PTS 🟢</div>`;
+            setTimeout(() => {
+                if (state.currentSubLevel < 9) {
+                    state.currentSubLevel++;
+                    loadCurrentLevel();
+                } else {
+                    feedback.innerHTML = `<div class="feedback-box feedback-correct">¡COMPLETADORA DE GRADO! 🎉</div>`;
+                    setTimeout(() => switchScreen('map'), 1500);
+                }
+            }, 1200);
+        } else {
+            feedback.innerHTML = `<div class="feedback-box feedback-wrong">❌ INCORRECTO - REINTENTAR</div>`;
+            setTimeout(() => {
+                loadCurrentLevel();
+            }, 1500);
+        }
+    }
+</script>
+</body>
+</html>
